@@ -1,0 +1,20 @@
+# Local / runtime
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+*.log
+.env
+.env.*
+
+# Training artifacts (keep docs/curves summaries; ignore raw runs)
+experiments/
+checkpoints/
+*.ckpt
+wandb/
+ray_results/
+
+# Editor
+.idea/
+.vscode/
+*.swp

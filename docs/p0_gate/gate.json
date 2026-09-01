@@ -1,0 +1,11 @@
+{
+  "phase": "P0",
+  "init": "Qwen3-4B-Instruct-2507",
+  "n": 256,
+  "acc": 0.65625,
+  "correct": 168.0,
+  "threshold_note": "Instruct is reference; SFT must be >= acc-0.02 to pass",
+  "sft_min_acc": 0.63625,
+  "status": "pass",
+  "next": "P1 sync max_head_offpolicyness=0 from Instruct"
+}

@@ -1,0 +1,61 @@
+{
+  "summary": {
+    "tag": "smoke_instruct",
+    "model": "openmodels/Qwen3-4B-Instruct-2507",
+    "n": 8,
+    "correct": 6.0,
+    "acc": 0.75,
+    "max_tokens": 1024,
+    "seed": 1
+  },
+  "rows": [
+    {
+      "i": 0,
+      "ok": 0.0,
+      "pred_boxed": null,
+      "gold_boxed": "12"
+    },
+    {
+      "i": 1,
+      "ok": 1.0,
+      "pred_boxed": "-7",
+      "gold_boxed": "-7"
+    },
+    {
+      "i": 2,
+      "ok": 1.0,
+      "pred_boxed": "6",
+      "gold_boxed": "6"
+    },
+    {
+      "i": 3,
+      "ok": 1.0,
+      "pred_boxed": "288",
+      "gold_boxed": "288"
+    },
+    {
+      "i": 4,
+      "ok": 1.0,
+      "pred_boxed": "600\\pi",
+      "gold_boxed": "600\\pi"
+    },
+    {
+      "i": 5,
+      "ok": 1.0,
+      "pred_boxed": "4",
+      "gold_boxed": "4"
+    },
+    {
+      "i": 6,
+      "ok": 0.0,
+      "pred_boxed": null,
+      "gold_boxed": "-7"
+    },
+    {
+      "i": 7,
+      "ok": 1.0,
+      "pred_boxed": "6",
+      "gold_boxed": "6"
+    }
+  ]
+}

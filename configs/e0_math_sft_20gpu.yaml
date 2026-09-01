@@ -1,0 +1,123 @@
+# K3-align E0: MATH light SFT cold-start
+# Topology: 20 Hopper (96GB HBM) · fsdp:d20 · no rollout
+
+experiment_name: k3-e0-math-sft
+# r2: previous trial finished 1 epoch (~46 steps) but saver never wrote HF weights
+trial_name: qwen3-4b-instruct-20gpu-r2
+
+seed: 1
+enable_offload: false
+# ~46 steps/epoch @ batch=160 · 3 epochs ≈ 138 steps (enough to save + stabilize)
+total_train_epochs: 3
+total_train_steps: null
+tokenizer_path: ${actor.path}
+
+cluster:
+  n_nodes: 3
+  n_gpus_per_node: 8
+  fileroot: ${oc.env:K3_ROOT}/experiments
+  name_resolve:
+    type: nfs
+    nfs_record_root: ${oc.env:K3_ROOT}/tmp/name_resolve/${experiment_name}/${trial_name}
+
+scheduler:
+  type: ray
+
+actor:
+  backend: "fsdp:d20p1t1"
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: ${oc.env:MODEL_PATH}
+  init_from_scratch: false
+  disable_dropout: true
+  gradient_checkpointing: true
+  dtype: bfloat16
+  attn_impl: sdpa
+  mb_spec:
+    max_tokens_per_mb: 16384
+  optimizer:
+    type: adam
+    lr: 2.0e-5
+    weight_decay: 0.05
+    beta1: 0.9
+    beta2: 0.95
+    eps: 1.0e-5
+    lr_scheduler_type: cosine
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.03
+  scheduling_spec:
+    - task_type: worker
+      port_count: 2
+      gpu: 1
+      mem: 32
+      cmd: python3 -m areal.infra.rpc.rpc_server
+      env_vars:
+        # Prefer phase2-runtime site-packages over /usr/local protobuf (swanlab import)
+        PYTHONPATH: "${oc.env:SITE}:${oc.env:AREAL_REPO}"
+        PATH: "${oc.env:VENV}/bin:/usr/local/bin:/usr/bin"
+        NCCL_SOCKET_IFNAME: eth0
+        GLOO_SOCKET_IFNAME: eth0
+        TP_SOCKET_IFNAME: eth0
+        NCCL_IB_DISABLE: "1"
+        NCCL_NET: Socket
+        SWANLAB_MODE: disabled
+        WANDB_MODE: disabled
+
+train_dataset:
+  batch_size: 160
+  shuffle: true
+  drop_last: true
+  pin_memory: false
+  num_workers: 4
+  path: ${oc.env:SFT_DATA_PATH}
+  type: sft
+  max_length: 2048
+  # null → plain HF Dataset (avoid remote data-service port=0 failure)
+  scheduling_spec: null
+
+valid_dataset:
+  batch_size: 160
+  shuffle: false
+  drop_last: false
+  pin_memory: false
+  num_workers: 2
+  path: ${oc.env:SFT_DATA_PATH}
+  type: sft
+  max_length: 2048
+  scheduling_spec: null
+
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: null
+
+recover:
+  mode: disabled
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: null
+
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  wandb:
+    mode: disabled
+  swanlab:
+    mode: disabled
+  trackio:
+    mode: disabled

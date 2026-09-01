@@ -1,0 +1,208 @@
+# P5 Stage B — approx Effort · τ=1.0 · b0=256 · warm-start from Stage A final
+# Topology: 3-node · 24×Hopper (96GB HBM) · vllm:d4 + fsdp:d20 · batch=160
+# actor.path is patched by run_p5_full.sh to Stage A final ckpt; ref stays Instruct.
+
+experiment_name: k3-align-math-rl
+trial_name: p5-effort-tau1-24gpu
+
+seed: 1
+enable_offload: false
+total_train_epochs: 50
+total_train_steps: 100
+tokenizer_path: ${actor.path}
+
+cluster:
+  n_nodes: 3
+  n_gpus_per_node: 8
+  fileroot: ${oc.env:K3_ROOT}/experiments
+  name_resolve:
+    type: nfs
+    nfs_record_root: ${oc.env:K3_ROOT}/tmp/name_resolve/${experiment_name}/${trial_name}
+
+scheduler:
+  type: ray
+
+rollout:
+  backend: "vllm:d4p1t1"
+  admin_api_key: k3-align-p5-effort-tau1-24gpu-20260810
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  max_concurrent_rollouts: 32
+  queue_size: null
+  consumer_batch_size: ${train_dataset.batch_size}
+  max_head_offpolicyness: 4
+  enable_rollout_tracing: false
+  scheduling_spec: ${actor.scheduling_spec}
+  fileroot: ${cluster.fileroot}
+  tokenizer_path: ${tokenizer_path}
+  dump_to_file: false
+  agent:
+    mode: inline
+    admin_api_key: k3-align-p5-effort-tau1-24gpu-20260810
+    export_style: individual
+    turn_discount: 1.0
+
+gconfig:
+  n_samples: 8
+  min_new_tokens: 0
+  max_new_tokens: 512
+  max_tokens: 1024
+  greedy: false
+  temperature: 1.0
+
+actor:
+  backend: "fsdp:d20p1t1"
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: ${oc.env:P5_STAGE_A_CKPT}
+  init_from_scratch: false
+  disable_dropout: true
+  gradient_checkpointing: true
+  dtype: bfloat16
+  attn_impl: sdpa
+  mb_spec:
+    max_tokens_per_mb: 16384
+  optimizer:
+    type: adam
+    lr: 1.0e-6
+    weight_decay: 0.0
+    beta1: 0.9
+    beta2: 0.999
+    eps: 1.0e-8
+    lr_scheduler_type: constant
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.0
+  eps_clip: 0.2
+  temperature: ${gconfig.temperature}
+  reward_scaling: 1.0
+  reward_bias: 0.0
+  kl_ctl: 0.0
+  ppo_n_minibatches: 1
+  recompute_logprob: true
+  use_decoupled_loss: true
+  rejection_sampling:
+    level: token
+    action: mask
+    metric: ratio
+    lower: 0.2
+    upper: 5.0
+  reward_norm:
+    mean_level: group
+    std_level: null
+    group_size: ${gconfig.n_samples}
+  adv_norm:
+    mean_level: null
+    std_level: null
+  weight_update_mode: disk
+  max_new_tokens: ${gconfig.max_new_tokens}
+  scheduling_spec:
+    - task_type: worker
+      port_count: 2
+      gpu: 1
+      mem: 8
+      cmd: python3 -c "import k25_boot; import effort_boot; import runpy; runpy.run_module('areal.infra.rpc.rpc_server', run_name='__main__')"
+      env_vars:
+        PYTHONPATH: "${oc.env:K3_ROOT}/pythonpath:${oc.env:SITE}:${oc.env:AREAL_REPO}"
+        PATH: "${oc.env:VENV}/bin:/usr/local/bin:/usr/bin"
+        K25_TAU_LOG_RATIO_SQ: "0.01"
+        K3_EFFORT_ENABLED: "1"
+        K3_EFFORT_B0: "256"
+        K3_EFFORT_TAU: "1.0"
+        K3_EFFORT_AUDIT_PATH: "${oc.env:K3_ROOT}/experiments/checkpoints/root/k3-align-math-rl/p5-effort-tau1-24gpu/effort_audit.jsonl"
+        K3_EFFORT_AUDIT_EVERY: "8"
+        NCCL_SOCKET_IFNAME: eth0
+        GLOO_SOCKET_IFNAME: eth0
+        TP_SOCKET_IFNAME: eth0
+        NCCL_IB_DISABLE: "1"
+        NCCL_NET: Socket
+        SWANLAB_MODE: disabled
+        WANDB_MODE: disabled
+
+ref:
+  backend: ${actor.backend}
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: ${oc.env:MODEL_PATH}
+  init_from_scratch: false
+  disable_dropout: true
+  dtype: ${actor.dtype}
+  attn_impl: sdpa
+  mb_spec:
+    max_tokens_per_mb: 16384
+  optimizer: null
+  scheduling_strategy:
+    type: colocation
+    target: actor
+  scheduling_spec: ${actor.scheduling_spec}
+
+vllm:
+  model: ${actor.path}
+  seed: ${seed}
+  skip_tokenizer_init: false
+  dtype: ${actor.dtype}
+  max_model_len: 1024
+  max_num_seqs: 64
+  gpu_memory_utilization: 0.55
+
+train_dataset:
+  batch_size: 160
+  shuffle: true
+  drop_last: true
+  pin_memory: false
+  num_workers: 4
+  path: ${oc.env:DATA_PATH}
+  type: rl
+  max_length: 512
+  scheduling_spec: null
+
+valid_dataset: null
+
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: 100
+  freq_secs: null
+
+recover:
+  mode: disabled
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  wandb:
+    mode: disabled
+  swanlab:
+    mode: disabled
+  trackio:
+    mode: disabled
+
+perf_tracer:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  enabled: false
+  session_tracer:
+    enabled: false
+
+reward:
+  backend: local
+  timeout_seconds: 60
+  max_retries: 0
+  on_error: zero

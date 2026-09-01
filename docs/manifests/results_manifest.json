@@ -1,0 +1,431 @@
+{
+  "schema_version": 1,
+  "eval_protocol": {
+    "task": "MATH boxed accuracy",
+    "dataset": "DigitalLearningGmbH/MATH-lighteval",
+    "split": "test",
+    "n": 256,
+    "sample_seed": 1,
+    "sampling": {
+      "temperature": 0.0,
+      "max_tokens": 1024,
+      "stop": [
+        "<|im_end|>"
+      ]
+    },
+    "prompt": "problem + 'Please reason step by step, and put your final answer within \\boxed{}.' via Qwen chat template",
+    "grader": "math_verify.parse/verify; fallback last_boxed string match",
+    "script": "scripts/math_boxed_probe.py",
+    "gate_rule": "same-batch delta vs designated baseline; default tolerate >= -2pp"
+  },
+  "train_defaults": {
+    "seed": 1,
+    "model": "Qwen3-4B-Instruct-2507",
+    "data": "gsm8k_hard",
+    "total_train_steps_nominal": 200,
+    "recipe_R": {
+      "group_size": 8,
+      "mask_alpha_beta": [
+        0.2,
+        5.0
+      ],
+      "tau_R": 0.01,
+      "clip": 0.2,
+      "kl_ctl": 0,
+      "adam_lr": 1e-06
+    },
+    "gen_train": {
+      "max_new_tokens": 512,
+      "temperature": 1.0
+    }
+  },
+  "trials": [
+    {
+      "claim_ids": [
+        "C0"
+      ],
+      "phase": "P0",
+      "trial": null,
+      "config": null,
+      "note": "cold-start gate only; no RL trial"
+    },
+    {
+      "claim_ids": [
+        "C1",
+        "C2",
+        "C6"
+      ],
+      "phase": "P1",
+      "trial": "p1-k25-sync-h0-full",
+      "config": "configs/p1_k25_sync_h0_20gpu.yaml",
+      "seed": 1,
+      "H": 0,
+      "ckpt_glob": "experiments/checkpoints/root/k3-align-math-rl/p1-k25-sync-h0-full/actor/*globalstep199*",
+      "curve": "curves/p1-k25-sync-h0-full.csv"
+    },
+    {
+      "claim_ids": [
+        "C2",
+        "C3",
+        "C4",
+        "C5"
+      ],
+      "phase": "P2",
+      "trial": "p2-k25-async-h4",
+      "config": "configs/p2_k25_async_h4_20gpu.yaml",
+      "seed": 1,
+      "H": 4,
+      "ckpt_glob": "experiments/checkpoints/root/k3-align-math-rl/p2-k25-async-h4/actor/*globalstep199*",
+      "curve": "curves/p2-k25-async-h4.csv"
+    },
+    {
+      "claim_ids": [
+        "C3"
+      ],
+      "phase": "P3-tau0",
+      "trial": "p3-h4-tau0",
+      "config": "configs/p3_h4_tau0_20gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p3-h4-tau0.csv"
+    },
+    {
+      "claim_ids": [
+        "C3"
+      ],
+      "phase": "P3-tau005",
+      "trial": "p3-h4-tau005",
+      "config": "configs/p3_h4_tau005_20gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p3-h4-tau005.csv",
+      "note": "n_steps=237 in log (resume/extra); not a 200-step clean run"
+    },
+    {
+      "claim_ids": [
+        "C3"
+      ],
+      "phase": "P3-mask",
+      "trial": "p3-h4-mask-tight",
+      "config": "configs/p3_h4_mask_tight_20gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p3-h4-mask-tight.csv"
+    },
+    {
+      "claim_ids": [
+        "C4"
+      ],
+      "phase": "P4",
+      "trial": "p4-h4-lambda05-16gpu",
+      "config": "configs/p4_h4_lambda05_16gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p4-h4-lambda05-16gpu.csv"
+    },
+    {
+      "claim_ids": [
+        "C5"
+      ],
+      "phase": "P5-A",
+      "trial": "p5-effort-tau2-24gpu",
+      "config": "configs/p5_effort_tau2_24gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p5-effort-tau2-24gpu.csv",
+      "note": "Stage A \u03c4_E=2.0; logged n=147 (not exactly 100)"
+    },
+    {
+      "claim_ids": [
+        "C5"
+      ],
+      "phase": "P5-B",
+      "trial": "p5-effort-tau1-24gpu",
+      "config": "configs/p5_effort_tau1_24gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p5-effort-tau1-24gpu.csv",
+      "note": "Stage B \u03c4_E=1.0 warm-start from A; n=100; train reward negative under hard gate"
+    },
+    {
+      "claim_ids": [
+        "C6"
+      ],
+      "phase": "P6-v1",
+      "trial": "p6-mopd-p1teacher-24gpu",
+      "config": "configs/p6_mopd_p1teacher_24gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p6-mopd-p1teacher-24gpu.csv",
+      "status": "VOID"
+    },
+    {
+      "claim_ids": [
+        "C6"
+      ],
+      "phase": "P6-v2",
+      "trial": "p6-mopd-p1teacher-24gpu-v2",
+      "config": "configs/p6_mopd_p1teacher_24gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p6-mopd-p1teacher-24gpu-v2.csv",
+      "status": "VOID",
+      "note": "aborted ~19 steps (disk/NFS)"
+    },
+    {
+      "claim_ids": [
+        "C6"
+      ],
+      "phase": "P6-v3",
+      "trial": "p6-mopd-p1teacher-24gpu-v3",
+      "config": "configs/p6_mopd_p1teacher_24gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p6-mopd-p1teacher-24gpu-v3.csv",
+      "status": "FAIL",
+      "knobs": {
+        "student": "Instruct",
+        "pos_only": false,
+        "weight_sync": "xccl",
+        "length_norm": true,
+        "alpha": 0.5
+      }
+    },
+    {
+      "claim_ids": [
+        "C6"
+      ],
+      "phase": "P6-v4",
+      "trial": "p6-mopd-p1teacher-24gpu-v4",
+      "config": "configs/p6_mopd_p1teacher_24gpu.yaml",
+      "seed": 1,
+      "curve": "curves/p6-mopd-p1teacher-24gpu-v4.csv",
+      "status": "PASS",
+      "knobs": {
+        "student": "P1-final",
+        "pos_only": true,
+        "weight_sync": "xccl",
+        "length_norm": true,
+        "alpha": 0.5,
+        "env": [
+          "K3_MOPD_POS_ONLY=1"
+        ]
+      },
+      "ckpt_glob": "experiments/checkpoints/root/k3-align-math-rl/p6-mopd-p1teacher-24gpu-v4/actor/*globalstep199*"
+    }
+  ],
+  "claims": [
+    {
+      "id": "C0",
+      "statement": "P0 Instruct cold-start gate passes at 65.625% boxed (168/256).",
+      "batch": "batch_p1_p2_p3",
+      "artifacts": [
+        "p0_gate/gate.json",
+        "boxed_p1_p2_p3/compare.json"
+      ],
+      "expect": {
+        "acc": 0.65625,
+        "correct": 168,
+        "n": 256
+      }
+    },
+    {
+      "id": "C1",
+      "statement": "P1 sync+R is the sync ceiling ~78% boxed.",
+      "batch": "batch_p1_p2_p3",
+      "artifacts": [
+        "boxed_p1_p2_p3/compare.json"
+      ],
+      "expect": {
+        "tag": "p1_h0_final",
+        "acc": 0.78125,
+        "correct": 200,
+        "n": 256
+      },
+      "also_see": {
+        "batch_p6_v4_same_batch_p1": {
+          "acc": 0.78515625,
+          "correct": 201,
+          "artifact": "boxed_p6/compare_v4.json"
+        },
+        "note": "Do not mix batches when quoting deltas."
+      }
+    },
+    {
+      "id": "C2",
+      "statement": "P2 H=4 only: ~+32% train throughput vs P1; boxed \u22123.125pp vs P1 in batch_p1_p2_p3 (soft-fail vs \u22122pp).",
+      "batch": "batch_p1_p2_p3",
+      "artifacts": [
+        "boxed_p1_p2_p3/compare.json",
+        "P1_P2_COMPARE.md"
+      ],
+      "expect": {
+        "p2_acc": 0.75,
+        "delta_pp_vs_p1": -3.125,
+        "sec_per_step_p1": 109.6,
+        "sec_per_step_p2": 83.1,
+        "throughput_gain_pct": 31.9
+      }
+    },
+    {
+      "id": "C3",
+      "statement": "P3 \u03c4_R=0 \u2248 P2 boxed (+0.78pp vs P2); recipe \u03c4_R is not the cause of P2 drop.",
+      "batch": "batch_p1_p2_p3",
+      "artifacts": [
+        "boxed_p1_p2_p3/compare.json"
+      ],
+      "expect": {
+        "p3_tau0_acc": 0.7578125,
+        "delta_pp_vs_p2": 0.78125
+      }
+    },
+    {
+      "id": "C4",
+      "statement": "P4 approx \u03bb=0.5: \u22121.953pp vs same-batch P2; gate pass (\u2265 \u22122pp).",
+      "batch": "batch_p4",
+      "artifacts": [
+        "boxed_p4/compare.json"
+      ],
+      "expect": {
+        "p2_acc": 0.76171875,
+        "p4_acc": 0.7421875,
+        "delta_pp": -1.953125,
+        "gate_pass": true
+      }
+    },
+    {
+      "id": "C5",
+      "statement": "P5 approx Effort (final \u03c4_E=1 stage): +0.781pp boxed vs same-batch P2; mean_gen_len \u22122.1%; train task_reward on P5-B is negative and must not be used as capability.",
+      "batch": "batch_p5",
+      "artifacts": [
+        "boxed_p5/compare.json",
+        "curves/p5-effort-tau1-24gpu.json"
+      ],
+      "expect": {
+        "p2_acc": 0.76171875,
+        "p5_acc": 0.76953125,
+        "delta_pp": 0.78125,
+        "len_rel_change": -0.0212,
+        "gate_pass": true,
+        "p5b_task_reward_last20_lt": 0.0
+      }
+    },
+    {
+      "id": "C6",
+      "statement": "P6 approx MOPD: v1/v2 VOID; v3 FAIL 72.27% (\u22126.25pp vs P1); v4 PASS 79.30% (+0.781pp vs same-batch P1).",
+      "batch": "batch_p6_v4",
+      "artifacts": [
+        "boxed_p6/compare_v4.json",
+        "curves/p6-mopd-p1teacher-24gpu-v4.json",
+        "curves/p6-mopd-p1teacher-24gpu-v3.json",
+        "curves/p6-mopd-p1teacher-24gpu.json"
+      ],
+      "expect": {
+        "v4_acc": 0.79296875,
+        "v4_correct": 203,
+        "same_batch_p1_acc": 0.78515625,
+        "delta_pp_v4_vs_p1": 0.78125,
+        "v3_acc": 0.72265625,
+        "v1_task_reward_last": 0.0,
+        "gate_pass": true
+      }
+    },
+    {
+      "id": "C7",
+      "statement": "Train-curve summaries in TECH_REPORT \u00a76.3 match docs/curves/*.json (task_reward first20/last20/last).",
+      "batch": "curves",
+      "artifacts": [
+        "curves/COMPARE.md"
+      ],
+      "expect_from_curves": true
+    }
+  ],
+  "curve_summary_expect": {
+    "metric": "ppo_actor/task_reward/avg",
+    "rows": {
+      "p1-k25-sync-h0-full": {
+        "n": 200,
+        "mean_first20": 0.379336,
+        "mean_last20": 0.468243,
+        "last": 0.53516
+      },
+      "p2-k25-async-h4": {
+        "n": 201,
+        "mean_first20": 0.379062,
+        "mean_last20": 0.446953,
+        "last": 0.5
+      },
+      "p3-h4-tau0": {
+        "n": 200,
+        "mean_first20": 0.378165,
+        "mean_last20": 0.438477,
+        "last": 0.48047
+      },
+      "p3-h4-tau005": {
+        "n": 237,
+        "mean_first20": 0.375196,
+        "mean_last20": 0.422461,
+        "last": 0.45391
+      },
+      "p3-h4-mask-tight": {
+        "n": 200,
+        "mean_first20": 0.376797,
+        "mean_last20": 0.382539,
+        "last": 0.44453
+      },
+      "p4-h4-lambda05-16gpu": {
+        "n": 200,
+        "mean_first20": 0.380671,
+        "mean_last20": 0.444213,
+        "last": 0.3831
+      },
+      "p5-effort-tau2-24gpu": {
+        "n": 147,
+        "mean_first20": 0.377501,
+        "mean_last20": 0.415118,
+        "last": 0.3875
+      },
+      "p5-effort-tau1-24gpu": {
+        "n": 100,
+        "mean_first20": -0.657423,
+        "mean_last20": -0.588242,
+        "last": -0.65859
+      },
+      "p6-mopd-p1teacher-24gpu": {
+        "n": 151,
+        "mean_first20": 0.374951,
+        "mean_last20": 0.0,
+        "last": 0.0
+      },
+      "p6-mopd-p1teacher-24gpu-v2": {
+        "n": 19,
+        "mean_first20": 0.378084,
+        "mean_last20": 0.378084,
+        "last": 0.35781
+      },
+      "p6-mopd-p1teacher-24gpu-v3": {
+        "n": 200,
+        "mean_first20": 0.376876,
+        "mean_last20": 0.431211,
+        "last": 0.46406
+      },
+      "p6-mopd-p1teacher-24gpu-v4": {
+        "n": 200,
+        "mean_first20": 0.485976,
+        "mean_last20": 0.488673,
+        "last": 0.55625
+      }
+    },
+    "atol": 0.0005
+  },
+  "artifact_sha256_16": {
+    "curves/p1-k25-sync-h0-full.csv": "fd64aae09d125245",
+    "curves/p2-k25-async-h4.csv": "120ca6a8f9592cd4",
+    "curves/p3-h4-mask-tight.csv": "cb0b39b0c3d9b15a",
+    "curves/p3-h4-tau0.csv": "a24105806bc5e899",
+    "curves/p3-h4-tau005.csv": "8c8927ed0fc82a1b",
+    "curves/p4-h4-lambda05-16gpu.csv": "32b03c127a897b73",
+    "curves/p5-effort-tau1-24gpu.csv": "01108b1e7d80e61b",
+    "curves/p5-effort-tau2-24gpu.csv": "2b077489b92c3b39",
+    "curves/p6-mopd-p1teacher-24gpu-v2.csv": "55fe34f2a7986374",
+    "curves/p6-mopd-p1teacher-24gpu-v3.csv": "74be2dfc9e0441ca",
+    "curves/p6-mopd-p1teacher-24gpu-v4.csv": "2ddeec6a629da5a2",
+    "curves/p6-mopd-p1teacher-24gpu.csv": "486d8fff48234bf6",
+    "boxed_p1_p2_p3/compare.json": "6c97f193b98c1040",
+    "boxed_p5/compare.json": "948c9d558211721b",
+    "boxed_p6/compare_v4.json": "1a44fdcf9febcefc",
+    "p0_gate/gate.json": "3bd34d28750d34e4",
+    "boxed_p4/compare.json": "3650656b11e07af8"
+  }
+}

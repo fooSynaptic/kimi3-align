@@ -1,0 +1,36 @@
+{
+  "n": 256,
+  "rows": [
+    {
+      "tag": "base_instruct",
+      "n": 256,
+      "correct": 168.0,
+      "acc": 0.65625
+    },
+    {
+      "tag": "p1_h0_final",
+      "n": 256,
+      "correct": 200.0,
+      "acc": 0.78125
+    },
+    {
+      "tag": "p2_h4_final",
+      "n": 256,
+      "correct": 192.0,
+      "acc": 0.75
+    },
+    {
+      "tag": "p3_tau0_final",
+      "n": 256,
+      "correct": 194.0,
+      "acc": 0.7578125
+    }
+  ],
+  "delta_p1_vs_base": 0.125,
+  "delta_p2_vs_p1": -0.03125,
+  "delta_p3_vs_p2": 0.007812,
+  "delta_p2_vs_base": 0.09375,
+  "delta_p3_vs_base": 0.101562,
+  "p2_vs_p1_gate": "fail_collapse",
+  "p3_vs_p2_gate": "pass"
+}

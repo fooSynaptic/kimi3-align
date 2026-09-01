@@ -1,0 +1,4 @@
+# P2 done marker
+
+trial=p2-k25-async-h4
+log=experiments/logs/.../p2_k25_async_full_*.log

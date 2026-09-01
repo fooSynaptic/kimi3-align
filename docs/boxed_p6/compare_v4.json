@@ -1,0 +1,36 @@
+{
+  "p1": {
+    "tag": "p1_sync_h0_final",
+    "n": 256,
+    "correct": 201.0,
+    "acc": 0.78515625,
+    "mean_gen_len": 540.53125,
+    "error": null
+  },
+  "p2": {
+    "tag": "p2_h4_final",
+    "n": 256,
+    "correct": 194.0,
+    "acc": 0.7578125,
+    "mean_gen_len": 598.08984375,
+    "error": null
+  },
+  "p6": {
+    "tag": "p6_mopd_v4_final",
+    "n": 256,
+    "correct": 203.0,
+    "acc": 0.79296875,
+    "mean_gen_len": 522.859375,
+    "error": null
+  },
+  "p6_v3_ref": {
+    "tag": "p6_mopd_v3_final",
+    "acc": 0.72265625,
+    "correct": 185.0,
+    "n": 256,
+    "mean_gen_len": 610.15234375
+  },
+  "max_p1_p2_acc": 0.78515625,
+  "delta_pp_vs_max_p1_p2": 0.78125,
+  "gate_pass": true
+}

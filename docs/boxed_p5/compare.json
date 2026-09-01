@@ -1,0 +1,18 @@
+{
+  "p2": {
+    "tag": "p2_h4_final",
+    "n": 256,
+    "correct": 195.0,
+    "acc": 0.76171875,
+    "mean_gen_len": 598.375
+  },
+  "p5": {
+    "tag": "p5_effort_tau1_final",
+    "n": 256,
+    "correct": 197.0,
+    "acc": 0.76953125,
+    "mean_gen_len": 585.6796875
+  },
+  "delta_pp": 0.78125,
+  "gate_pass": true
+}
