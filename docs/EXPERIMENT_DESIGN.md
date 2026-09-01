@@ -22,7 +22,7 @@ Based on Kimi K3 (arXiv:2607.24653) §4.1. Principle: keep the model, data, and 
 
 | Phase | Name | Only Change | Success Criteria |
 |-------|------|-------------|------------------|
-| **P0** | Cold-start gate | Initialization: Instruct **or** SFT that passes the gate | MATH boxed N≥256; SFT must not fall below Instruct−2pp, otherwise discard it |
+| **P0** | Cold-start gate | Initialization: Instruct **or** SFT that passes the gate | MATH boxed N≥256; SFT is kept only if boxed ≥ Instruct−2pp (regressing E0 was dropped) |
 | **P1** | Sync baseline | `max_head_offpolicyness=0`, recipe R, initialization that passed P0 | Complete the specified steps; record accuracy/reward/staleness≈0 |
 | **P2** | Async-head | **Only** `max_head_offpolicyness=4` | Relative to P1: improve throughput or tail latency; keep accuracy above the collapse threshold; shift staleness right |
 | **P3** | αβτ sweep | Fix H; sweep mask / τ | Stable interval; boxed ≈ P2 |
@@ -30,7 +30,7 @@ Based on Kimi K3 (arXiv:2607.24653) §4.1. Principle: keep the model, data, and 
 | **P5** | approx Effort | `b0`, `τ_E` schedule | Lower length without an accuracy collapse |
 | **P6** | approx MOPD | Single-teacher Eq.15 | v1–v3 fail path documented; v4 pass vs P1 |
 
-**Default mainline**: P0 = Instruct (do not use the degraded E0) → P1 → P2.
+**Default mainline**: P0 = Instruct (E0 regressed below the gate and was retired) → P1 → P2.
 
 **Legacy trials** (retired): `partial-grpo-dis-e0warm`, `p1-sync-h0` (SAO/DIS framing).
 

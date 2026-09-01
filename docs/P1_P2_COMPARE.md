@@ -6,7 +6,7 @@ Comparison logs:
 - P1: `logs/p1_k25_full_20260807_130934.log` · trial `p1-k25-sync-h0-full` · H=0
 - P2: `logs/p2_k25_async_full_20260808_005557.log` · trial `p2-k25-async-h4` · H=4
 
-Success criteria (design): relative to P1, improve throughput or tail latency; avoid an accuracy/reward collapse; shift staleness to the right.
+Success criteria (design): relative to P1, improve throughput or tail latency; keep late-stage reward within ~10% of P1 (collapse threshold); shift staleness to the right.
 
 | Metric | P1 (H=0) | P2 (H=4) | Assessment |
 |--------|----------|----------|------------|

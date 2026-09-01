@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# P1 K2.5-style sync (h0) → success → P2 async (h4). 20 GPU. No kill -9.
-# If head-node GPUs 0-3 are zombie VRAM, set SKIP_DIRTY_HEAD=1 to put Ray head
-# on a clean node and only expose clean GPUs on the dirty host.
+# P1 K2.5-style sync (h0) → success → P2 async (h4). 20 GPU. Teardown uses TERM so CUDA contexts release cleanly.
+# SKIP_DIRTY_HEAD=1: when head GPUs hold zombie VRAM, Ray head moves to a clean node and only clean GPU indices are exposed on the dirty host.
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -13,8 +12,7 @@ STEPS=${STEPS:-200}
 POLL=${POLL:-60}
 export K25_TAU_LOG_RATIO_SQ="${K25_TAU_LOG_RATIO_SQ:-0.01}"
 
-# Dirty-head workaround: put Ray head on a clean node and only expose
-# remaining clean GPUs on the dirty host (set SKIP_DIRTY_HEAD=1).
+# SKIP_DIRTY_HEAD=1: Ray head on a clean node; dirty host contributes only GPUs that pass preflight VRAM check.
 if [[ "${SKIP_DIRTY_HEAD:-0}" == "1" ]]; then
   export HEAD_SSH=${HEAD_SSH:?set HEAD_SSH}
   export HEAD_HOST=${HEAD_HOST:?set HEAD_HOST}

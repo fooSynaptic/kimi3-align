@@ -1,4 +1,4 @@
-# LEGACY — retired. Canonical P2 is configs/p2_k25_async_h4_20gpu.yaml
+# Retired — canonical mainline P2: configs/p2_k25_async_h4_20gpu.yaml
 # P2 async-head · same as legacy P1 except max_head_offpolicyness=4
 # Topology: 20 Hopper (96GB HBM)
 

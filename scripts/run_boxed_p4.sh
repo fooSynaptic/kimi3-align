@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Boxed MATH for P4 final (+ optional P2 reuse). Prefer 02/03; leave 00 free by default.
+# Boxed MATH for P4 final (+ optional P2 reuse). Eval on HOST_A/HOST_B (see .env).
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)

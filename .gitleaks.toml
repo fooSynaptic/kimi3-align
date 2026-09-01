@@ -1,0 +1,10 @@
+# Local AReaL RPC admin keys in experiment YAML (not cloud credentials).
+# Values are trial-scoped strings like k3-align-p1-k25-smoke-20260808.
+
+title = "k3-align gitleaks config"
+
+[allowlist]
+description = "AReaL rollout/agent admin_api_key placeholders in Hydra configs"
+paths = ['''configs/.*\.yaml$''']
+regexTarget = "match"
+regexes = ['''admin_api_key:\s*k3-''']

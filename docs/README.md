@@ -5,6 +5,7 @@
 | [`TECH_REPORT_P0_P6.md`](TECH_REPORT_P0_P6.md) | End-to-end report in English (alignment, knobs, curves, boxed, claims) |
 | [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) | Claim IDs C0–C7; Tier-1 verify; Tier-2 retrain protocol |
 | [`manifests/results_manifest.json`](manifests/results_manifest.json) | Machine-readable expects + artifact hashes |
+| [`manifests/upstream_pins.json`](manifests/upstream_pins.json) | SAO + AReaL branch/commit pins (Tier-2) |
 | [`curves/COMPARE.md`](curves/COMPARE.md) | Train convergence overlays + per-trial SVGs |
 | [`curves/README.md`](curves/README.md) | How to extract/rebuild curves |
 | [`EXPERIMENT_DESIGN.md`](EXPERIMENT_DESIGN.md) | Phase design table |
@@ -13,7 +14,7 @@
 | [`boxed_p1_p2_p3/`](boxed_p1_p2_p3/) / [`boxed_p4/`](boxed_p4/) / [`boxed_p5/`](boxed_p5/) / [`boxed_p6/`](boxed_p6/) | MATH boxed N=256 artifacts |
 | [`JOB_QUEUE.md`](JOB_QUEUE.md) | Historical queue notes (ops) |
 
-Public docs avoid internal hostnames and absolute cluster paths.
+Public docs omit internal hostnames and absolute cluster paths.
 
 Verify locally:
 

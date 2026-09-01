@@ -50,7 +50,7 @@ ARM_LOG[p3-h4-tau0]=$K3/logs/p3-h4-tau0_20260808_141418.log
 
 cleanup_host_orphans() {
   echo "[p3] cleanup orphan spawn on HEAD_SSH (TERM only)"
-  # Large ppid=1 multiprocessing.spawn leftovers from disk weight sync / vLLM
+  # ppid=1 multiprocessing.spawn with RSS>500MiB — typical leftover from disk weight sync / vLLM teardown
   local pids
   pids=$(ps -eo pid,ppid,rss,cmd --sort=-rss | awk '$2==1 && $3>500000 && /multiprocessing.spawn/ {print $1}')
   if [[ -z "${pids// /}" ]]; then
@@ -107,7 +107,7 @@ stop_soft() {
 
 arm_already_done() {
   local id=$1
-  # Prefer final ckpt presence
+  # Gate on final ckpt presence (partial saves mid-run are not boxed-evaluable).
   local trial
   trial=${id}
   local ckpt_glob=$K3/experiments/checkpoints/root/k3-align-math-rl/${trial}/actor/epoch*globalstep199

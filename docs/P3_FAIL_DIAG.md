@@ -11,7 +11,7 @@
 - This is unrelated to τ=0.05 itself; `tau0` already completed all 200 steps.
 
 ## Fix / Resume
-1. Send TERM to orphaned spawn processes (do not sweep GPU processes with `kill -9`).
+1. Send **TERM** to orphaned spawn processes. Broad `kill -9` on GPU-attached workers often orphans CUDA contexts and leaves dirty VRAM; TERM lets vLLM/Ray tear down more cleanly.
 2. Confirm `MemAvailable` ≥ 200GiB and clean VRAM.
 3. Skip completed `tau0` and rerun `tau005` + `mask-tight` (`SKIP_DONE=1`).
-4. `saver.freq_steps=200` is synchronized to avoid accumulating intermediate checkpoints again.
+4. `saver.freq_steps=200` matches the full 200-step arm so resume does not accumulate extra intermediate checkpoints.

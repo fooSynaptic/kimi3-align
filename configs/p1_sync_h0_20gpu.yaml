@@ -1,4 +1,4 @@
-# LEGACY — retired SAO/DIS framing. Canonical P1 is configs/p1_k25_sync_h0_20gpu.yaml
+# Retired — canonical mainline P1: configs/p1_k25_sync_h0_20gpu.yaml (SAO/DIS framing)
 # P1 sync baseline · Instruct · GRPO+DIS · max_head_offpolicyness=0
 # Topology: 20 Hopper (96GB HBM)
 

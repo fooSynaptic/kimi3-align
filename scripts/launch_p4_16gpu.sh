@@ -51,7 +51,7 @@ echo "[p4] topology HEAD=$HEAD_SSH gpus=$HEAD_GPUS cvd=$HEAD_CVD workers=$WORKER
 echo "[p4] lambda enabled=$K3_LAMBDA_ENABLED λ=$K3_LAMBDA N=$K3_LAMBDA_N K=$K3_LAMBDA_K"
 echo "[p4] audit=$K3_LAMBDA_AUDIT_PATH"
 
-# launch_e1 must forward K3_LAMBDA_* into the train process env
+# launch_e1 forwards K3_LAMBDA_* into the train process env (barrier hooks read them at worker start).
 CONFIG="$CONFIG" LOG="$LOG" \
   HEAD_SSH="$HEAD_SSH" HEAD_HOST="$HEAD_HOST" \
   HEAD_GPUS="$HEAD_GPUS" HEAD_CVD="$HEAD_CVD" \

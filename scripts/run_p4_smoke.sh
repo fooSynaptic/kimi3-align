@@ -80,7 +80,7 @@ estimate_sec_step() {
 import re, sys
 from pathlib import Path
 text = Path(sys.argv[1]).read_text(errors="ignore")
-# Prefer explicit timing lines if present
+# Parse sec/step from explicit timing lines when the log contains them.
 times = [float(x) for x in re.findall(r"time/step[^\d]*([0-9.]+)", text)]
 if len(times) >= 2:
     print(f"{sum(times[-3:]) / len(times[-3:]):.1f}")
@@ -119,7 +119,7 @@ run_one() {
 
   echo "[p4-smoke] === $tag batch=$batch concurrent=$concurrent gpu_mem=$gpu_mem max_seqs=$max_seqs ==="
 
-  # temporary config overlay (env-pass avoids bash/python brace clashes)
+  # temporary config overlay (env vars sidestep bash/python brace clashes in Hydra paths)
   local tmp_cfg=$K3/tmp/p4_smoke_${tag}.yaml
   mkdir -p "$K3/tmp"
   BATCH="$batch" CONC="$concurrent" GMEM="$gpu_mem" MSEQS="$max_seqs" \

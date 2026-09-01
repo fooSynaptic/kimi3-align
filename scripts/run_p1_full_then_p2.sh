@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Full P1 (200 steps) then P2. Uses 8GiB object store. No kill -9.
+# Full P1 (200 steps) then P2. Uses 8GiB object store. Teardown uses TERM so CUDA contexts release cleanly.
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -21,7 +21,7 @@ run_one() {
   local config=$2
   local log=$K3/logs/${phase}_$(date +%Y%m%d_%H%M%S).log
   echo "[chain] start $phase config=$config"
-  # wipe trial name_resolve before each phase (launch also wipes)
+  # name_resolve wiped before each phase — separate NFS registry keys per trial (P1 vs P2).
   local trial
   trial=$(awk '/^trial_name:/{print $2; exit}' "$config")
   rm -rf "$K3/tmp/name_resolve/k3-align-math-rl/${trial}" || true

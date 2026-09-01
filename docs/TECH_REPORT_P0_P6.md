@@ -12,9 +12,9 @@ One line: this repo is an **auditable approximate ablation of K3 §4.1** (outcom
 
 ## 1. Alignment table (this work · K3 · Diff)
 
-How to read: left = what this repo actually does; middle = K3 / paper-side counterpart (§4.1 and public descriptions); right = **where equality must not be claimed**.
+How to read: left = what this repo actually does; middle = K3 / paper-side counterpart (§4.1 and public descriptions); right = **where a one-to-one claim would overstate alignment**.
 
-| Dimension | This experiment | K3 counterpart | Diff / do not claim |
+| Dimension | This experiment | K3 counterpart | Diff / scope limit |
 |-----------|-----------------|----------------|---------------------|
 | **Scope** | Small-model, runnable ablations of §4.1-style knobs | Full K3 training system (large data, many components) | Scale, data mix, and stack are not reproduced |
 | **Model** | Qwen3-4B-Instruct | K3 proprietary large-model stack | Different model family; absolute scores are not comparable |
@@ -28,7 +28,7 @@ How to read: left = what this repo actually does; middle = K3 / paper-side count
 | **Reasoning Effort** | P5: global **b0** + **τ_E** schedule; `T > τ_E·b0 ⇒ r=-1` | Per-prompt / multi-effort experts, full suite | **≠** full Effort: no `b0(x)`, no multi-expert; not DAPO overlong |
 | **MOPD / OPD** | P6: `approx MOPD`, **single teacher=P1**, Eq.15 dense → advantage | Multi-teacher OPD / nine experts · domain routing · GRM | **≠** nine-expert MOPD; RKL double-count off; eng. extras: length-norm / xccl / pos-only |
 | **Ablation method** | **One factor per phase** (P0→P6) | Paper reports system-level results | This is a **mechanism ablation lab**, not an end-to-end leaderboard reproduction |
-| **Capability gate** | Same-batch MATH boxed; usual tolerance −2pp | Paper’s own eval and scale | Scores must not be compared to paper tables |
+| **Capability gate** | Same-batch MATH boxed; usual tolerance −2pp | Paper’s own eval and scale | Paper tables use different data, scale, and eval draws — absolute % here is batch-local |
 | **Wording** | Always `approx *` | Paper component names | `approx` = Diff already declared |
 
 **One row per phase:**
@@ -100,7 +100,9 @@ Same Greek letters mean different things on **different arms**—read this befor
 | **α_OPD** | **P6** | Scale of dense OPD into advantage (optionally `/T`) | v1=`0.05`; v2+=`0.5` |
 | **pos-only** | P6 v4 | Keep only `r_opd > 0`; zero negative log-ratio | `K3_MOPD_POS_ONLY=1` |
 
-### 2.2 Do not mix the two τ’s
+### 2.2 Two τ symbols: different stages, different levers
+
+**τ_R** and **τ_E** share a letter but act on different objects. Conflating them breaks phase attribution (P3 recipe tuning vs P5 length gating).
 
 | | **τ_R (P3 / recipe R)** | **τ_E (P5 Effort)** |
 |--|-------------------------|---------------------|
@@ -217,7 +219,7 @@ Instruct (P0) → P1(H=0) → P2(H=4)
 | One change | Add **completion-fraction stop-admit** |
 | Knobs | **λ=`0.5`**: after half of the window’s target trajs complete, stop new rollouts → wait inflight → train → bump version; H unchanged |
 | Topology note | 16 GPU, batch=168 (must divide DP) |
-| Expectation | Auditable partial window; possible batch↓, stale→0; do not hard-compare throughput across GPU counts |
+| Expectation | Auditable partial window; possible batch↓, stale→0; throughput vs P2 is only loosely comparable because GPU count differs (16 vs 20) |
 | Result | Per-step pause/train audits; boxed **74.2%** vs same-batch P2 76.2% (−1.95pp, inside gate) |
 
 ---
@@ -316,7 +318,7 @@ P3 detail plots/CSV: `docs/curves/`. Rebuild: `python3 scripts/extract_train_cur
 
 ## 7. Boxed overview (N=256)
 
-**Same-batch rule:** absolute % from different eval batches **must not** be cross-compared; batches are labeled below. Protocol: `MATH-lighteval` test · N=256 · seed=1 · greedy · `max_tokens=1024` · `scripts/math_boxed_probe.py`.
+**Same-batch eval context:** absolute % from different eval batches carries different sampling noise and checkpoint pairings, so cross-batch % comparison is undefined. Batches are labeled below. Protocol: `MATH-lighteval` test · N=256 · seed=1 · greedy · `max_tokens=1024` · `scripts/math_boxed_probe.py`.
 
 | Phase | boxed | Batch | Note |
 |-------|-------|-------|------|
@@ -350,16 +352,16 @@ Each supported conclusion has a **Claim ID** in `docs/manifests/results_manifest
 | **C6** | MOPD needs scale/sync/sign fixes; v3 fail, **v4 pass** (+0.78pp vs same-batch P1) | `boxed_p6/compare_v4.json` + curves |
 | **C7** | §6 curve table matches `docs/curves/*.json` | `verify_reported_results.py` |
 
-**Do not over-claim:** not a full K3 reproduction; H≠λ; v4 +0.78pp ≠ proven strong distillation; N=256 is noisy; absolute scores are not cross-batch comparable.
+**Scope boundaries:** approximate ablation only (not full K3); **H** and **λ** are distinct knobs; P6-v4 +0.78pp reflects same-batch boxed under sparse pos-only OPD, not proven strong distillation; N=256 adds binomial noise; absolute % is batch-local.
 
 ---
 
 ## 9. Wording checklist
 
 - [ ] `approx λ-partial` / `approx Effort` / `approx MOPD`
-- [ ] H not written as λ-partial; τ_R vs τ_E not mixed
+- [ ] H written distinctly from λ-partial; τ_R (loss) and τ_E (reward gate) kept separate
 - [ ] P6 single teacher=P1; v1–v4 spelled out
-- [ ] Capability = same-batch N=256 boxed, not train correct
+- [ ] Capability claims cite same-batch N=256 boxed; train correctness is documented separately where gates distort it (P5-B)
 - [ ] Curves point to `docs/curves/`; no internal host paths
 - [ ] Conclusions carry Claim IDs; `verify_reported_results.py` passes
 - [ ] No cross-batch absolute boxed % comparisons

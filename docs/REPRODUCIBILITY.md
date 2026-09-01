@@ -34,11 +34,11 @@ Machine-readable map of claims → trials → artifacts:
 | **C6** | P6 v3 fail / v4 +0.78pp vs same-batch P1 | `boxed_p6/compare_v4.json` + curves |
 | **C7** | §6 curve table matches `docs/curves/*.json` | curve JSON summaries + CSV hashes |
 
-### Same-batch rule (mandatory)
+### Same-batch eval context
 
-Absolute boxed % **must not** be compared across eval batches. Each claim cites a `batch_*` id in the manifest.
+Absolute boxed % is defined relative to a fixed eval batch (`batch_*` in the manifest). Comparing absolute % across batches mixes different probe runs and checkpoint context — each claim therefore cites one batch id.
 
-Examples of P1 across batches (both valid, not interchangeable):
+Examples of P1 across batches (both valid, serving different claim ids):
 
 | Batch | P1 acc | Used for |
 |-------|--------|----------|
@@ -47,7 +47,20 @@ Examples of P1 across batches (both valid, not interchangeable):
 
 ## Tier 2 — End-to-end retrain + reeval (cluster)
 
-Runtime: install [SAO](https://github.com/fooSynaptic/Single-rollout-async-Optimization) and its AReaL bootstrap (`INSTALL=1 INFERENCE_BACKEND=vllm bash scripts/bootstrap_areal.sh`), then set `SAO_ROOT` / `AREAL_REPO` / `VENV` as in the root README Quickstart.
+Runtime: install [SAO](https://github.com/fooSynaptic/Single-rollout-async-Optimization) at the pinned revision, bootstrap AReaL, then set `SAO_ROOT` / `AREAL_REPO` / `VENV` as in the root README Quickstart.
+
+**Upstream pins** (branch + commit): [`manifests/upstream_pins.json`](manifests/upstream_pins.json)
+
+| Layer | Branch | Commit |
+|-------|--------|--------|
+| SAO | `main` | `ac2728149041b5f15ceb75413f467ce0659179cf` |
+| AReaL | detached | `3cf0dfbd2b0fbeabd6977184980e189d1567747a` (SAO `bootstrap_areal.sh`) |
+
+```bash
+git clone https://github.com/fooSynaptic/Single-rollout-async-Optimization "$SAO_ROOT"
+git -C "$SAO_ROOT" checkout ac2728149041b5f15ceb75413f467ce0659179cf
+cd "$SAO_ROOT" && INSTALL=1 INFERENCE_BACKEND=vllm bash scripts/bootstrap_areal.sh
+```
 
 ### Fixed protocol
 
@@ -108,7 +121,7 @@ python3 scripts/plot_train_curves.py --curves-dir docs/curves
 python3 scripts/verify_reported_results.py --update-hashes
 ```
 
-Tier-2 success = same-batch deltas and gates match claim expect fields (within N=256 binomial noise); do not require bit-identical reward curves.
+Tier-2 success = same-batch deltas and gates match claim expect fields (within N=256 binomial noise); bit-identical reward curves are out of scope because async RL and hardware vary.
 
 ## Known non-clean runs (still part of the record)
 
@@ -122,4 +135,4 @@ Tier-2 success = same-batch deltas and gates match claim expect fields (within N
 
 1. **C0–C7 pass** `verify_reported_results.py` on a clean checkout.
 2. Optional Tier-2: retrain with listed configs/seeds; reeval with the fixed probe; same-batch gates still pass.
-3. Never claim K3 paper number reproduction — only this ablation protocol.
+3. “Reproduced” here means this ablation protocol and artifact gates — not numeric parity with K3 paper tables.

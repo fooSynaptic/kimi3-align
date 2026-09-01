@@ -239,7 +239,7 @@
           "correct": 201,
           "artifact": "boxed_p6/compare_v4.json"
         },
-        "note": "Do not mix batches when quoting deltas."
+        "note": "Deltas are batch-local; each claim cites one batch_* id."
       }
     },
     {
@@ -286,7 +286,7 @@
     },
     {
       "id": "C5",
-      "statement": "P5 approx Effort (final \u03c4_E=1 stage): +0.781pp boxed vs same-batch P2; mean_gen_len \u22122.1%; train task_reward on P5-B is negative and must not be used as capability.",
+      "statement": "P5 approx Effort (final \u03c4_E=1 stage): +0.781pp boxed vs same-batch P2; mean_gen_len \u22122.1%; capability is judged on boxed MATH because P5-B train task_reward is negative under the hard gate.",
       "batch": "batch_p5",
       "artifacts": [
         "boxed_p5/compare.json",

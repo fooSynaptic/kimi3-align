@@ -19,9 +19,9 @@ export MODEL_PATH=/path/to/Qwen3-4B-Instruct-2507
 export DATA_PATH=/path/to/gsm8k_hard
 ```
 
-Runtime: [SAO](https://github.com/fooSynaptic/Single-rollout-async-Optimization) AReaL bootstrap (`INSTALL=1 INFERENCE_BACKEND=vllm bash scripts/bootstrap_areal.sh`).
+Runtime: [SAO](https://github.com/fooSynaptic/Single-rollout-async-Optimization) @ **`main` / `ac2728149041b5f15ceb75413f467ce0659179cf`**, then AReaL bootstrap (`INSTALL=1 INFERENCE_BACKEND=vllm bash scripts/bootstrap_areal.sh` → **`3cf0dfbd…`**). See [`docs/manifests/upstream_pins.json`](../docs/manifests/upstream_pins.json).
 
 Canonical mainline YAMLs: `p1_k25_sync_h0_20gpu.yaml`, `p2_k25_async_h4_20gpu.yaml`, `p3_h4_*.yaml`, `p4_h4_lambda05_16gpu.yaml`, `p5_effort_tau*.yaml`, `p6_mopd_p1teacher_24gpu.yaml`.  
-Legacy (do not use): `p1_sync_h0_20gpu.yaml`, `p2_async_h4_20gpu.yaml`, `e1_partial_rl_20gpu.yaml`.
+Legacy configs (retired SAO/DIS framing; canonical mainline uses `p1_k25_*` / `p2_k25_*`): `p1_sync_h0_20gpu.yaml`, `p2_async_h4_20gpu.yaml`, `e1_partial_rl_20gpu.yaml`.
 
 Smoke configs live under `smoke/` (few steps, same knobs). GPU counts in filenames are topology hints.

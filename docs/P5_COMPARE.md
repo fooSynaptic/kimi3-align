@@ -36,8 +36,8 @@ Length: 585.7 vs 598.4 (**−2.1%**), satisfying the requirement to decrease rel
 1. The hard gate is auditable: A applies almost no penalties (budget equals the generation cap); in B, 97% of samples receive reward=−1, consistent with a loose-to-tight schedule.
 2. Boxed capability does not collapse and is slightly above same-batch P2.
 3. The length gain is weak: boxed outputs are only about 13 tokens shorter; incorrect training outputs remain long (~532).
-4. Stage B's correct training sequence rate falls from ~40% to ~16%, a direct consequence of assigning a hard −1 to over-budget samples. **Do not use train correctness as a proxy for boxed results.**
+4. Stage B's correct training sequence rate falls from ~40% to ~16% because over-budget samples receive hard −1. Capability claims in this repo use same-batch boxed MATH (N=256); train `correct_n_seqs` tracks gate severity, not boxed accuracy — P5-B is the canonical example (97% over_budget yet +0.78pp boxed vs P2).
 
-Reporting constraint: report only approx Effort and the values above; do not claim the complete K3 Reasoning Effort method.
+**Reporting scope:** label results `approx Effort` (global \(b_0\) + two-stage \(\tau\)); the paper's per-prompt \(b_0(x)\) / multi-expert Reasoning Effort suite is out of scope for this MVP.
 
 To reduce length materially, decouple the \(b_0\) or τ schedule from `max_new_tokens` (for example, set A's threshold below 512), or implement per-prompt \(b_0(x)\).

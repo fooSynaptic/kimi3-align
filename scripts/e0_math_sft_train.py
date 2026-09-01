@@ -18,7 +18,7 @@ def main(args):
     )
     valid_dataset = None
     if config.valid_dataset is not None:
-        # MATH-lighteval uses "test"; fall back to "train" only if missing.
+        # MATH-lighteval exposes "test"; "train" is the fallback split when test is absent in the loader config.
         try:
             valid_dataset = get_custom_dataset(
                 split="test",

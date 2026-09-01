@@ -3,7 +3,7 @@
 # Topology: 3-node · 24×Hopper (96GB HBM) · vllm:d4 + fsdp:d20 · batch=160
 # v1: α=0.05 no /T → reward collapse. v2: len-norm+α=0.5 disk → NFS 120s. v3: xccl OK, boxed −6.25pp.
 # v4: student/ref=P1 final; K3_MOPD_POS_ONLY=1 (drop negative log-ratio); keep xccl+len-norm α=0.5.
-# Claim: approx MOPD (one teacher). ≠ nine-expert K3 MOPD.
+# Scope: approx MOPD (single teacher = P1). Nine-expert K3 MOPD routing is a separate system.
 
 experiment_name: k3-align-math-rl
 trial_name: p6-mopd-p1teacher-24gpu-v4

@@ -10,7 +10,7 @@ P0 has **no** RL train curve (Instruct cold-start gate only).
 
 - **Mainline overlay**: P1 / P2 / P3-τ0 / P4 / P5-A / P6-v4 on one canvas.
 - **P6 overlay**: v1 collapse, v2 abort, v3 underperform, v4 warm high plateau.
-- **P5-B**: negative `task_reward` is expected under hard Effort gate; judge by boxed, not train reward.
+- **P5-B**: negative `task_reward` follows from the hard Effort gate (97% over_budget); same-batch boxed MATH is the capability metric for C5.
 
 ## Overlay figures
 

@@ -1,6 +1,6 @@
 # P4 — K2.5-style H=4 + λ=0.5 soft barrier (scheme B approx)
 # Topology: 2-node · 16×Hopper (96GB HBM) · vllm:d4 + fsdp:d12
-# Claim: approx λ-partial (stop new submits at λNK + audit). NOT full K3 sandbox.
+# Scope: approx λ-partial (stop new submits at λNK + audit). Paper λ-sandbox state machine is out of scope for this arm.
 
 experiment_name: k3-align-math-rl
 trial_name: p4-h4-lambda05-16gpu

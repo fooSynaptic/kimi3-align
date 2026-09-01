@@ -7,7 +7,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR/lib/env.sh"
 
 export K25_TAU_LOG_RATIO_SQ="${K25_TAU_LOG_RATIO_SQ:-0.01}"
-# Prefer smaller object store after P1 OOM on worker node
+# Smaller Ray object store after P1 OOM on a worker node (reduces head/worker RSS pressure).
 export RAY_OBJECT_STORE_MEMORY="${RAY_OBJECT_STORE_MEMORY:-8589934592}"
 # GPUs cleaned; use default topology unless SKIP_DIRTY_HEAD=1
 if [[ "${SKIP_DIRTY_HEAD:-0}" == "1" ]]; then

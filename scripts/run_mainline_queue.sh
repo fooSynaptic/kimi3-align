@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Mainline job queue after smoke green: P2 formal (200) → write status.
-# P0/P1 assumed done; P3+ recorded as blocked (not implemented).
+# P0/P1 assumed done; P3+ queue entries were not wired in this script (see run_p3_sweep.sh).
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -81,7 +81,7 @@ run_p2_full() {
   local trial
   trial=$(awk '/^trial_name:/{print $2; exit}' "$config")
   echo "[queue] start P2 full trial=$trial expected_steps=$EXPECTED_STEPS"
-  # launch also wipes; clear explicitly for safety
+  # name_resolve cleared here and again in launch — duplicate wipe prevents stale NFS keys on resume.
   if [[ -n "$trial" ]]; then
     local nr=$K3/tmp/name_resolve/k3-align-math-rl/$trial
     if [[ -d "$nr" ]]; then

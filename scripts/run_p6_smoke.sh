@@ -108,7 +108,7 @@ if (( opd_n < 1 )); then
   tail -20 "$audit" >&2 || true
   exit 1
 fi
-# v2 scale gate: suffix-sum must stay O(1), not O(T) (~30 in the collapsed v1 run).
+# v2 scale gate: suffix-sum stays O(1) per step; v1 without length-norm scaled O(T) and collapsed (~30 |A_opd| vs 0/1 outcome).
 max_abs=$(python3 -c "
 import json, sys
 mx=0.0

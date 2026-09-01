@@ -57,7 +57,7 @@ def main() -> None:
     args = ap.parse_args()
 
     ds = load_dataset("DigitalLearningGmbH/MATH-lighteval", "default", split="test")
-    # In-memory sample — avoid datasets.shuffle/select writing Arrow cache to /tmp|/root.
+    # In-memory shuffle/select: datasets cache defaults to /tmp or $HOME, which fills small system disks on eval nodes.
     n = min(args.n, len(ds))
     idxs = list(range(len(ds)))
     random.Random(args.seed).shuffle(idxs)

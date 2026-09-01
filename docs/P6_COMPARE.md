@@ -56,4 +56,4 @@ See `docs/boxed_p6/COMPARE_v4.md`.
 3. Removing v3's stable negative bias with pos-only is critical; the P1 warm start provides a high-capability starting point.  
 4. Effective OPD remains sparse (pos_frac≈5%). The gain is better characterized as “H=4 RL near P1 without being dragged down by negative OPD,” not as “strong distillation is fully activated.”
 
-Reporting: use only `approx MOPD` (single teacher=P1, pos-only); **not equivalent to** the complete nine-expert K3 MOPD.
+**Reporting scope:** `approx MOPD` (single teacher=P1, pos-only) — the paper's nine-expert routing and domain GRM stack is a separate, larger system.

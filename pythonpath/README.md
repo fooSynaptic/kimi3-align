@@ -10,4 +10,4 @@ Imported via `PYTHONPATH` on the driver / RPC workers (see `configs/*.yaml` `sch
 | `mopd_boot.py` / `p6_boot.py` | P6 | approx MOPD / OPD (`K3_MOPD_*`, `K3_MOPD_POS_ONLY`) |
 
 Entry train script: `scripts/e1_math_rl_train.py`.  
-Do not claim these are full K3 λ / Effort / nine-expert MOPD.
+These modules implement **approx** λ-stop, Effort gate, and single-teacher OPD hooks — structurally related to K3 §4.1 namesakes but narrower in scope (see alignment table in `docs/TECH_REPORT_P0_P6.md`).

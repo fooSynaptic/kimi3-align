@@ -1,4 +1,4 @@
-# LEGACY — retired E0-warm GRPO+DIS trial. Not on the P0–P6 mainline.
+# Retired E0-warm GRPO+DIS trial — outside P0–P6 mainline.
 # Topology: 20 Hopper (96GB HBM)
 
 experiment_name: k3-e1-math-rl

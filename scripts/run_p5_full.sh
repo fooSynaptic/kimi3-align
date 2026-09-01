@@ -18,7 +18,7 @@ source "$K3/scripts/lib/wait_train.sh"
 POLL=${POLL:-60}
 EXPECTED_STEPS=${EXPECTED_STEPS:-100}
 MIN_HOST_AVAIL_GB=${MIN_HOST_AVAIL_GB:-400}
-# disk weight-sync leaves huge ppid=1 spawn; raise threshold slightly
+# disk weight-sync can leave large ppid=1 spawn trees; MemAvailable threshold raised accordingly.
 export RAY_MEMORY_USAGE_THRESHOLD="${RAY_MEMORY_USAGE_THRESHOLD:-0.995}"
 export PATH="$VENV/bin:/usr/local/bin:$PATH"
 

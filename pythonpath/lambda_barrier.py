@@ -12,7 +12,7 @@ Semantics:
   Each accepted GroupedRollout counts as K trajectories.
   When window_completed >= target → capacity/pending=0 (stop new submits).
   Wait loop exits when barrier active and running==0 and enough accepts,
-  so prepare_batch does not hang (requires dynamic_bs or early-exit patch).
+  so prepare_batch returns under dynamic_bs or the early-exit patch (otherwise counters can stall).
 """
 from __future__ import annotations
 
@@ -275,8 +275,8 @@ def apply() -> None:
                     running = int(sm.get_stats().running)
                 except Exception:
                     running = int(getattr(sm.rollout_stat, "running", 0))
-                # Exit once λ threshold met. Prefer drained; if idle too long with
-                # enough accepts, force train to avoid deadlock on stuck counters.
+                # Exit once λ threshold met: wait for drained inflight when possible;
+                # if counters stall with enough accepts, force train so the window cannot deadlock.
                 enough = accepted_cnt >= min_groups and accepted_cnt > 0
                 drained = running <= 0
                 stalled = barrier and enough and idle_iters >= 15
@@ -305,7 +305,7 @@ def apply() -> None:
                 continue
             break
 
-        # Final safety: never return a non-DP-aligned batch
+        # Truncate to FSDP dp_size alignment before return (partial tail groups cannot dispatch).
         if results:
             n_keep = (len(results) // dp_size) * dp_size
             if n_keep == 0:

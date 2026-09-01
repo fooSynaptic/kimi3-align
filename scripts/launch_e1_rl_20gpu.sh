@@ -46,7 +46,7 @@ if [[ ! -x "$VENV/bin/python" ]]; then
   exit 1
 fi
 
-# Wipe stale NFS name_resolve for this config's experiment/trial (avoids NameEntryExistsError).
+# Wipe stale NFS name_resolve for this config's experiment/trial (prevents NameEntryExistsError on relaunch).
 wipe_name_resolve() {
   local exp trial root
   exp=$(awk '/^experiment_name:/{print $2; exit}' "$CONFIG")
@@ -125,7 +125,7 @@ ssh -o BatchMode=yes "$HEAD_SSH" \
   | tee -a "$LOG"
 
 # Hydra overrides: key=value
-# SMOKE_STEPS only overrides step count / saver; keeps config trial_name (do not rename to DIS).
+# SMOKE_STEPS shortens step count / saver only; trial_name stays in YAML for log and ckpt path continuity (DIS legacy name retired).
 EXTRA_ARGS=()
 if [[ -n "$SMOKE_STEPS" ]]; then
   EXTRA_ARGS+=("total_train_steps=${SMOKE_STEPS}")

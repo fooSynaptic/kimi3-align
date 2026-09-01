@@ -2,7 +2,7 @@
 # Topology: 20 Hopper (96GB HBM) · fsdp:d20 · no rollout
 
 experiment_name: k3-e0-math-sft
-# r2: previous trial finished 1 epoch (~46 steps) but saver never wrote HF weights
+# r2: prior trial completed ~1 epoch (46 steps) but saver.freq_steps missed a HF weight write
 trial_name: qwen3-4b-instruct-20gpu-r2
 
 seed: 1
@@ -52,7 +52,7 @@ actor:
       mem: 32
       cmd: python3 -m areal.infra.rpc.rpc_server
       env_vars:
-        # Prefer phase2-runtime site-packages over /usr/local protobuf (swanlab import)
+        # PYTHONPATH leads with phase2-runtime site-packages (protobuf version matches swanlab; /usr/local can mismatch)
         PYTHONPATH: "${oc.env:SITE}:${oc.env:AREAL_REPO}"
         PATH: "${oc.env:VENV}/bin:/usr/local/bin:/usr/bin"
         NCCL_SOCKET_IFNAME: eth0
@@ -72,7 +72,7 @@ train_dataset:
   path: ${oc.env:SFT_DATA_PATH}
   type: sft
   max_length: 2048
-  # null → plain HF Dataset (avoid remote data-service port=0 failure)
+  # scheduling_spec: null → in-process HF Dataset (remote data-service with port=0 fails on this stack)
   scheduling_spec: null
 
 valid_dataset:

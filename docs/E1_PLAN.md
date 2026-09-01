@@ -3,7 +3,7 @@
 > **The claim in this document is invalid.** See [`EXPERIMENT_DESIGN.md`](EXPERIMENT_DESIGN.md) for the strictly aligned design.  
 > The legacy configuration incorrectly labeled SAO `GRPO+DIS` + `max_head_offpolicyness=4` as K3 §4.1.2 partial rollout.
 
-Historical record (do not treat this as the K3 mainline):
+Historical record for the retired E1/partial-grpo line — the K3-aligned mainline is [`EXPERIMENT_DESIGN.md`](EXPERIMENT_DESIGN.md) P0→P6:
 
 - Cold start: E0 r2 epoch2 (boxed `warn_drop`)
 - Algorithm: GRPO+DIS G=8 mask `[0.3,5]` (SAO hard recipe)

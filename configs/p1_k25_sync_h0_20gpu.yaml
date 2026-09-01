@@ -3,7 +3,7 @@
 #   reward_norm: mean=group, std=null
 #   rejection_sampling: token/mask/ratio [0.2, 5.0]  (α,β placeholders)
 #   τ via env K25_TAU_LOG_RATIO_SQ (patched in e1_math_rl_train.py)
-# NOT claimed: λ-pause+sandbox, MuonClip, exact α/β/τ. NOT SAO GRPO+DIS branding.
+# Scope: recipe R only — λ-pause sandbox, MuonClip, and paper-exact α/β/τ are out of scope; framing is K2.5-style, not SAO GRPO+DIS.
 # Topology: 3-node · 20×Hopper (96GB HBM) · vllm:d4 + fsdp:d16
 
 experiment_name: k3-align-math-rl

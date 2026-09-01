@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Boxed MATH for P6 v4 final vs P1/P2 (same batch N=256). Prefer 00/02/03.
+# Boxed MATH for P6 v4 final vs P1/P2 (same batch N=256). Eval on HOST_A/HOST_B (see .env).
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -48,7 +48,7 @@ export HF_HOME=$SAO/tmp/hf-home
 export HF_DATASETS_CACHE=$SAO/tmp/hf-datasets
 export HF_HUB_CACHE=$SAO/tmp/hf-home/hub
 export HF_ENDPOINT=\${HF_ENDPOINT:-https://hf-mirror.com}
-# Prefer cache; allow mirror fetch if cache missing.
+# HF offline first; probe falls back to hub fetch when cache is cold.
 export HF_HUB_OFFLINE=\${HF_HUB_OFFLINE:-0}
 export HF_DATASETS_OFFLINE=\${HF_DATASETS_OFFLINE:-0}
 export TRANSFORMERS_OFFLINE=1

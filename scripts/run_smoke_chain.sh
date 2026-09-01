@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Infrastructure smoke: P0 (N=8) → P1 (2 steps, h0) → P2 (2 steps, h4).
-# Load uses formal efficiency knobs; GPU util/mem peak mean must be ≥ MIN_GPU_UTIL%.
+# Load uses formal efficiency knobs; smoke gate requires GPU util/mem peak mean ≥ MIN_GPU_UTIL%.
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -31,7 +31,7 @@ mkdir -p "$K3/logs" "$K3/docs" "$K3/docs/smoke_p0"
 exec > >(tee -a "$CHAIN_LOG") 2>&1
 
 preflight_host_mem() {
-  # Ray kills workers at ~0.98 host RAM; orphans from prior runs can leave <100GiB free.
+  # Ray OOM-kills workers near ~0.98 host RAM; prior orphan spawn can shrink MemAvailable below the smoke gate.
   local avail_gb min_gb=${SMOKE_MIN_HOST_AVAIL_GB:-200}
   avail_gb=$(ssh -o BatchMode=yes -o ConnectTimeout=15 "${HEAD_SSH:?set HEAD_SSH}" \
     "free -g | awk '/^Mem:/{print \$7}'")
@@ -114,8 +114,7 @@ run_rl_smoke() {
   local log=$K3/logs/${phase}_$(date +%Y%m%d_%H%M%S).log
   local util_tsv=$K3/logs/${phase}_gpu_util.tsv
   echo "[smoke] start $phase config=$config min_gpu_util=${MIN_GPU_UTIL}%"
-  # NOTE: this function is often called under `if`; bash disables set -e in that
-  # context, so every fallible step must use explicit || return.
+  # NOTE: called under `if`; bash disables set -e there — fallible steps need explicit || return.
   CONFIG="$config" LOG="$log" \
     K25_TAU_LOG_RATIO_SQ="$K25_TAU_LOG_RATIO_SQ" \
     RAY_OBJECT_STORE_MEMORY="$RAY_OBJECT_STORE_MEMORY" \
@@ -187,7 +186,7 @@ else
 fi
 
 stop_between_phases
-# also wipe both smoke trials before P2
+# clear P1/P2 smoke trial name_resolve before P2 async smoke (same NFS hygiene as full runs).
 rm -rf "$K3/tmp/name_resolve/k3-align-math-rl/p1-k25-smoke" \
        "$K3/tmp/name_resolve/k3-align-math-rl/p2-k25-smoke" || true
 

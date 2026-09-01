@@ -5,7 +5,7 @@
 - **Included**: add an **Effort hard gate** to the P2 recipe (`H=4`, K2.5-style R, no λ): if \(T(y) > \tau\cdot b_0\), set `reward=-1`; otherwise retain the original `gsm8k` reward.
 - **Excluded (v1)**: per-prompt \(b_0(x)\), multiple effort experts, MOPD, λ-barrier, and changes to H / αβτ.
 - **Reporting**: `approx Effort` (global \(b_0\) + two-stage \(\tau\)); **not equivalent to** the paper's complete Reasoning Effort suite.
-- **Do not use** AReaL `overlong_reward_penalty` (the DAPO soft tail penalty is not equivalent to K3's −1 over-budget penalty).
+- **Reward path**: custom hard gate in [`effort_reward.py`](../pythonpath/effort_reward.py) — AReaL `overlong_reward_penalty` applies a DAPO soft tail, which behaves differently from K3's −1 over-budget penalty, so P5 keeps that hook disabled.
 
 ```mermaid
 flowchart LR

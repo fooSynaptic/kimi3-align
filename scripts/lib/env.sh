@@ -11,7 +11,7 @@
 #   export DATA_PATH=/path/to/gsm8k_hard
 #   export HEAD_SSH=... HEAD_HOST=... WORKER_SPECS=...
 #
-# Do NOT put `set -euo pipefail` here — callers own shell options.
+# Shell options (`set -euo pipefail`) live in callers — sourced lib stays composable across smoke/full wrappers.
 
 _k3_lib_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 _k3_scripts_dir=$(cd "${_k3_lib_dir}/.." && pwd)

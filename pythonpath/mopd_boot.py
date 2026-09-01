@@ -5,7 +5,8 @@ K3 §4.1.3:
 
 This patch adds a suffix-sum of α·r_opd into PPO advantages
 (values=0, γ=λ_gae=1 ⇒ GAE of per-token OPD). Outcome gsm8k reward is
-unchanged. Distill KL loss should stay 0 (avoid double-counting).
+unchanged. Distill KL loss stays 0 because Eq.15 already injects dense OPD
+into advantage (enabling RKL would double-count the same signal).
 
 v1 (α=0.05, no length-norm) let suffix-sum scale with T≈500 → |A_opd|~30
 vs outcome 0/1 and collapsed train reward to 0 after ~100 steps. v2 divides
@@ -78,7 +79,7 @@ def _audit(event: str, **fields: Any) -> None:
             p.parent.mkdir(parents=True, exist_ok=True)
             with p.open("a", encoding="utf-8") as f:
                 f.write(line + "\n")
-    except Exception as exc:  # noqa: BLE001 — audit must never crash training
+    except Exception as exc:  # noqa: BLE001 — audit failures are logged; training continues
         print(f"[mopd_boot] audit write failed: {exc}", flush=True)
 
 

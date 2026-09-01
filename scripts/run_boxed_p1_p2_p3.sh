@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Boxed MATH gate for P1 / P2 / P3-tau0 finals (+ Instruct baseline).
-# Prefer eval hosts via HOST_A / HOST_B (leave the train head free).
+# Eval runs on HOST_A / HOST_B so the Ray train head can stay on rollout GPUs.
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -14,7 +14,7 @@ BASE=${MODEL_PATH:?set MODEL_PATH to Instruct checkpoint or HF id}
 CK=$K3/experiments/checkpoints/root/k3-align-math-rl
 OUT=$K3/docs/boxed_p1_p2_p3
 N=${N:-256}
-# hosts that may hold GPUs (00 intentionally unused by default)
+# HOST_A / HOST_B: SSH aliases with spare eval GPUs (topology-specific; set in .env).
 HOST_A=${HOST_A:?set HOST_A}
 HOST_B=${HOST_B:?set HOST_B}
 
@@ -63,7 +63,7 @@ EOF
   echo "[boxed] done $tag"
 }
 
-# launch all in parallel (00 unused)
+# four probes in parallel across eval hosts
 pids=()
 for spec in "${JOBS[@]}"; do
   IFS='|' read -r tag model host gpu <<<"$spec"
@@ -120,9 +120,9 @@ cmp = {
     "delta_p2_vs_base": delta(base, p2),
     "delta_p3_vs_base": delta(base, p3),
 }
-# soft gates from experiment design spirit
+# same-batch gates from EXPERIMENT_DESIGN (−2pp collapse tolerance vs prior phase)
 if p1 and p2 and "acc" in p1 and "acc" in p2:
-    # P2 should not collapse vs P1 beyond ~2pp absolute (stricter than train-reward proxy)
+    # P2 boxed vs P1: design allows up to −2pp absolute before soft-fail (stricter than train-reward proxy)
     cmp["p2_vs_p1_gate"] = "pass" if p2["acc"] + 1e-9 >= p1["acc"] - 0.02 else "fail_collapse"
 if p2 and p3 and "acc" in p2 and "acc" in p3:
     cmp["p3_vs_p2_gate"] = "pass" if p3["acc"] + 1e-9 >= p2["acc"] - 0.02 else "fail_worse"

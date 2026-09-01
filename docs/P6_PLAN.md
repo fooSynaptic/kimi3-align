@@ -6,7 +6,7 @@
 - **Excluded (MVP)**: nine experts / multi-domain × multi-effort routing, GRM tournament, λ-barrier, and Effort schedule.
 - **Reporting**: `approx MOPD` (single teacher = P1); **not equivalent to** the paper's complete Multi-Teacher OPD.
 
-Disable AReaL's built-in `distill_loss_weight` RKL (`0.0`) to avoid double-counting it with the Eq.15 reward.
+Disable AReaL's built-in `distill_loss_weight` RKL (`0.0`): Eq.15 already adds dense OPD into advantage, and enabling RKL would double-count the same signal.
 
 ```text
 r_opd = clip(sg(log π_P1 − log π_θ), −R_max, R_max)
@@ -62,4 +62,4 @@ A ← A_gsm8k + suffix_sum(α · r_opd / T)
 
 1. Smoke: 2 steps; util≥50%; audit contains `opd` (for v4, expect `mean_suffix≥0` scale and auditable `pos_frac`).
 2. Full: 200 steps; final boxed ≥ max(P2, P1)−2pp (same-batch N=256).
-3. Reporting: use only approx MOPD and the paths above; do not claim complete K3 MOPD. v4 may be reported as “slightly above P1 in the same batch,” but must also state that pos_frac remains low and that this is not equivalent to fully activated strong distillation.
+3. **Reporting:** `approx MOPD` (single teacher = P1) covers the paths above. v4 reads as “slightly above P1 in the same batch” when pos_frac remains low (~5%) — the gain reflects removing negative OPD bias under H=4, not fully activated nine-expert distillation.
