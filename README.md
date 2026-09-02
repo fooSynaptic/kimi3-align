@@ -191,10 +191,10 @@ Inspired by Kimi K3 §4.1 training ideas. The **K3 paper** carries the official 
 
 ```bibtex
 @misc{k3-align,
-  title={k3-align: Open One-Factor Ablation Testbed for K3-Style RL Mechanisms on AReaL},
+  title={kimi3-align: Open One-Factor Ablation Testbed for K3-Style RL Mechanisms on AReaL},
   author={fooSynaptic},
   year={2026},
   howpublished={GitHub repository, \url{https://github.com/fooSynaptic/k3-align}},
   note={Not an official K3 reproduction; boxed metrics are same-batch internal comparisons}
-}
+} 
 ```
