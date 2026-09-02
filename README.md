@@ -1,4 +1,4 @@
-# k3-align
+# kimi3-align
 
 > **Scope:** open ablation testbed inspired by K3 §4.1 (arXiv:2607.24653), with **approximate** mechanisms on AReaL (vLLM rollout + FSDP actor). Citations should treat this repo as an independent protocol and artifact bundle — separate from Kimi K3's full system and paper leaderboard numbers.
 
@@ -101,17 +101,17 @@ docs/             # report, REPRODUCIBILITY, curves, boxed
 
 ## Upstream pins (required for Tier-2 retrain)
 
-k3-align **does not vendor** [SAO](https://github.com/fooSynaptic/Single-rollout-async-Optimization) or AReaL. Upstream drift breaks bootstrap, patches, and YAML assumptions.
+kimi3-align **does not vendor** [SAO](https://github.com/fooSynaptic/Single-rollout-async-Optimization) or AReaL. Upstream drift breaks bootstrap, patches, and YAML assumptions.
 
 | Layer | Repository | Branch | Commit pin |
 |-------|------------|--------|------------|
 | **SAO** | [Single-rollout-async-Optimization](https://github.com/fooSynaptic/Single-rollout-async-Optimization) | **`main`** | **`ac2728149041b5f15ceb75413f467ce0659179cf`** (2026-07-27) |
 | **AReaL** | [inclusionAI/AReaL](https://github.com/inclusionAI/AReaL) | detached @ pin | **`3cf0dfbd2b0fbeabd6977184980e189d1567747a`** (via SAO `bootstrap_areal.sh`) |
-| **k3-align** | this repo | your replay branch | match the commit whose artifacts you reproduce |
+| **kimi3-align** | this repo | your replay branch | match the commit whose artifacts you reproduce |
 
 Machine-readable copy: [`docs/manifests/upstream_pins.json`](docs/manifests/upstream_pins.json).
 
-Bootstrap (from **inside SAO**, not k3-align):
+Bootstrap (from **inside SAO**, not kimi3-align):
 
 ```bash
 git clone https://github.com/fooSynaptic/Single-rollout-async-Optimization "$SAO_ROOT"
@@ -129,7 +129,7 @@ git -C "$SAO_ROOT" rev-parse HEAD      # ac2728149041b5f15ceb75413f467ce0659179c
 git -C "$AREAL_REPO" rev-parse HEAD    # 3cf0dfbd2b0fbeabd6977184980e189d1567747a
 ```
 
-If bootstrap or patch apply fails, the SAO/AReaL pair is incompatible with this repo's configs — align pins before debugging k3-align YAML.
+If bootstrap or patch apply fails, the SAO/AReaL pair is incompatible with this repo's configs — align pins before debugging kimi3-align YAML.
 
 ## Quickstart
 
